@@ -58,7 +58,7 @@ export function GraphCanvas() {
             <Plot.Parametric
               key={eq.id}
               xy={(t) => [fnX(t), fnY(t)]}
-              t={[0, 2 * Math.PI]}
+              t={eq.tBounds || [0, 2 * Math.PI]}
               color={eq.color}
               weight={3}
             />

@@ -167,6 +167,24 @@ function EquationItem({ equation }: { equation: Equation }) {
                             className="bg-transparent border-none outline-none flex-1 text-neutral-100 font-mono text-sm placeholder:text-neutral-600"
                         />
                     </div>
+                    <div className="flex items-center gap-2 pl-10 pt-1">
+                        <span className="text-[10px] text-neutral-600 font-mono">t:</span>
+                        <div className="flex items-center gap-2">
+                            <input
+                                type="text"
+                                value={equation.tBounds?.[0] ?? 0}
+                                onChange={(e) => updateEquation(equation.id, { tBounds: [parseFloat(e.target.value) || 0, equation.tBounds?.[1] ?? 2 * Math.PI] })}
+                                className="w-14 bg-neutral-900/50 border border-neutral-800 rounded px-1.5 py-0.5 text-[10px] text-neutral-300 font-mono outline-none focus:border-neutral-700"
+                            />
+                            <span className="text-[10px] text-neutral-600 font-bold">to</span>
+                            <input
+                                type="text"
+                                value={equation.tBounds?.[1] ?? 6.28}
+                                onChange={(e) => updateEquation(equation.id, { tBounds: [equation.tBounds?.[0] ?? 0, parseFloat(e.target.value) || 0] })}
+                                className="w-14 bg-neutral-900/50 border border-neutral-800 rounded px-1.5 py-0.5 text-[10px] text-neutral-300 font-mono outline-none focus:border-neutral-700"
+                            />
+                        </div>
+                    </div>
                     {equation.error && (
                         <p className="text-[10px] text-red-400 pl-8">{equation.error}</p>
                     )}
