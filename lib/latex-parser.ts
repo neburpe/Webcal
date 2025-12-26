@@ -3,6 +3,7 @@ import { parseTex } from "tex-math-parser";
 export interface ParseResult {
   expression: string;
   error: string | null;
+  inequalityOp?: "<" | "<=" | ">" | ">=" | null;
 }
 
 /**
@@ -15,9 +16,30 @@ export function parseLatex(latex: string): ParseResult {
     return { expression: "", error: null };
   }
 
+  let cleanedLatex = latex;
+  let inequalityOp: ParseResult["inequalityOp"] = null;
+
+  // Simple inequality detection
+  const ops: Array<NonNullable<ParseResult["inequalityOp"]>> = ["<=", ">=", "<", ">"];
+  for (const op of ops) {
+      if (latex.includes(op)) {
+          inequalityOp = op;
+          // We assume input like 'y < sin(x)' -> we just need 'sin(x)' for the plot
+          const parts = latex.split(op);
+          // Try to be smart: if it's 'y < expression', take the expression part
+          if (parts[0].trim().toLowerCase() === 'y' || parts[0].trim().toLowerCase() === 'x') {
+              cleanedLatex = parts[1].trim();
+          } else {
+              // If it's 'expression > 0', this is harder. For now, assume y < ...
+              cleanedLatex = parts[0].trim();
+          }
+          break;
+      }
+  }
+
   try {
     // parseTex returns a MathJS node tree. We convert it to a string.
-    const node = parseTex(latex);
+    const node = parseTex(cleanedLatex);
     
     // Sanitize operators that might be left as TeX commands (e.g. \frac)
     const sanitized = node.transform(function (node: { isOperatorNode?: boolean; op?: string }) {
@@ -31,9 +53,9 @@ export function parseLatex(latex: string): ParseResult {
         return node as any;
     });
 
-    return { expression: sanitized.toString(), error: null };
+    return { expression: sanitized.toString(), error: null, inequalityOp };
   } catch (e: unknown) {
     const message = e instanceof Error ? e.message : "Invalid LaTeX";
-    return { expression: "", error: message };
+    return { expression: "", error: message, inequalityOp };
   }
 }

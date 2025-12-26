@@ -1,6 +1,6 @@
 "use client";
 
-import { Mafs, Coordinates, Plot } from "mafs";
+import { Mafs, Coordinates, Plot, Inequality } from "mafs";
 import { useCalculatorStore } from "@/store/useCalculatorStore";
 import { createEvaluator } from "@/lib/math-evaluator";
 import { useMemo, useRef, useState, useEffect } from "react";
@@ -41,6 +41,21 @@ export function GraphCanvas() {
           if (!eq.expression.trim()) return null;
           const fn = createEvaluator(eq.expression, "x");
           if (!fn) return null;
+
+          if (eq.inequalityOp) {
+              return (
+                <Inequality
+                    key={eq.id}
+                    y={fn}
+                    lessThan={eq.inequalityOp === "<" || eq.inequalityOp === "<="}
+                    lessThanOrEqualTo={eq.inequalityOp === "<="}
+                    greaterThan={eq.inequalityOp === ">" || eq.inequalityOp === ">="}
+                    greaterThanOrEqualTo={eq.inequalityOp === ">="}
+                    color={eq.color}
+                />
+              );
+          }
+
           return (
             <Plot.OfX
               key={eq.id}

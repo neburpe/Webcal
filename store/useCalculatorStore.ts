@@ -10,6 +10,7 @@ export interface Equation {
   expression: string; // Parsed MathJS string
   expressionY?: string; // Parsed MathJS string for Y
   tBounds?: [number, number]; // [min, max] for parametric
+  inequalityOp?: "<" | "<=" | ">" | ">=" | null;
   color: string;
   visible: boolean;
   error?: string | null;
@@ -87,6 +88,7 @@ export const useCalculatorStore = create<CalculatorState>()(
                 const result = parseLatex(updates.latex);
                 newEquation.expression = result.expression;
                 newEquation.error = result.error;
+                newEquation.inequalityOp = result.inequalityOp;
             }
 
             if (updates.latexY !== undefined) {
