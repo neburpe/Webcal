@@ -92,39 +92,47 @@ export function GraphCanvas() {
 
   
 
-                            <Plot.Inequality
+                                            <Plot.Inequality
 
   
 
-                                key={eq.id}
+                                                key={eq.id}
 
   
 
-                                y={fn}
+                                                y={fn}
 
   
 
-                                lessThan={eq.inequalityOp === "<" || eq.inequalityOp === "<="}
+                                                lessThan={eq.inequalityOp === "<" || eq.inequalityOp === "<="}
 
   
 
-                                lessThanOrEqualTo={eq.inequalityOp === "<="}
+                                                lessThanOrEqualTo={eq.inequalityOp === "<="}
 
   
 
-                                greaterThan={eq.inequalityOp === ">" || eq.inequalityOp === ">="}
+                                                greaterThan={eq.inequalityOp === ">" || eq.inequalityOp === ">="}
 
   
 
-                                greaterThanOrEqualTo={eq.inequalityOp === ">="}
+                                                greaterThanOrEqualTo={eq.inequalityOp === ">="}
 
   
 
-                                color={eq.color}
+                                                color={eq.color}
 
   
 
-                            />
+                                                minSamplingDepth={8}
+
+  
+
+                                                maxSamplingDepth={14}
+
+  
+
+                                            />
 
   
 
@@ -136,49 +144,107 @@ export function GraphCanvas() {
 
   
 
-            return (
+                      return (
 
-              <Plot.OfX
+  
 
-                key={eq.id}
+                        <Plot.OfX
 
-                y={fn}
+  
 
-                color={eq.color}
+                          key={eq.id}
 
-                weight={3}
+  
 
-              />
+                          y={fn}
 
-            );
+  
 
-          } else if (eq.type === "parametric") {
+                          color={eq.color}
 
-            const fnX = compiledCache.get(`${eq.id}-main`);
+  
 
-            const fnY = compiledCache.get(`${eq.id}-y`);
+                          weight={3}
 
-            if (!fnX || !fnY) return null;
+  
 
-            
+                          minSamplingDepth={8}
 
-            return (
+  
 
-              <Plot.Parametric
+                          maxSamplingDepth={14}
 
-                key={eq.id}
+  
 
-                xy={(t) => [fnX(t), fnY(t)]}
+                        />
 
-                t={eq.tBounds || [0, 2 * Math.PI]}
+  
 
-                color={eq.color}
+                      );
 
-                weight={3}
+  
 
-              />
+                    } else if (eq.type === "parametric") {
 
-            );
+  
+
+                      const fnX = compiledCache.get(`${eq.id}-main`);
+
+  
+
+                      const fnY = compiledCache.get(`${eq.id}-y`);
+
+  
+
+                      if (!fnX || !fnY) return null;
+
+  
+
+                      
+
+  
+
+                      return (
+
+  
+
+                        <Plot.Parametric
+
+  
+
+                          key={eq.id}
+
+  
+
+                          xy={(t) => [fnX(t), fnY(t)]}
+
+  
+
+                          t={eq.tBounds || [0, 2 * Math.PI]}
+
+  
+
+                          color={eq.color}
+
+  
+
+                          weight={3}
+
+  
+
+                          minSamplingDepth={8}
+
+  
+
+                          maxSamplingDepth={14}
+
+  
+
+                        />
+
+  
+
+                      );
 
           }
 
@@ -197,7 +263,17 @@ export function GraphCanvas() {
           zoom={{ min: 0.1, max: 10 }} 
           pan={true}
         >
-          <Coordinates.Cartesian subdivisions={showGrid ? 2 : false} />
+          <Coordinates.Cartesian 
+            subdivisions={showGrid ? 5 : false}
+            xAxis={{
+              lines: 1,
+              labels: (n) => (n % 1 === 0 ? n.toString() : ""),
+            }}
+            yAxis={{
+              lines: 1,
+              labels: (n) => (n % 1 === 0 ? n.toString() : ""),
+            }}
+          />
           {renderedPlots}
         </Mafs>
       )}
