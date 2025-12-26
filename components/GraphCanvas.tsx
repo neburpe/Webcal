@@ -3,12 +3,31 @@
 import { Mafs, Coordinates, Plot, Inequality } from "mafs";
 import { useCalculatorStore } from "@/store/useCalculatorStore";
 import { createEvaluator } from "@/lib/math-evaluator";
-import { useMemo, useRef, useState, useEffect } from "react";
+import { useMemo, useRef, useState, useEffect, useCallback } from "react";
+import { toPng } from "html-to-image";
+import { Download } from "lucide-react";
 
 export function GraphCanvas() {
   const { equations, showGrid } = useCalculatorStore();
   const containerRef = useRef<HTMLDivElement>(null);
   const [size, setSize] = useState({ width: 0, height: 0 });
+
+  const exportImage = useCallback(async () => {
+    if (!containerRef.current) return;
+    
+    try {
+      const dataUrl = await toPng(containerRef.current, {
+        cacheBust: true,
+        backgroundColor: getComputedStyle(document.body).backgroundColor,
+      });
+      const link = document.createElement('a');
+      link.download = `webcal-graph-${Date.now()}.png`;
+      link.href = dataUrl;
+      link.click();
+    } catch (err) {
+      console.error('oops, something went wrong!', err);
+    }
+  }, [containerRef]);
 
   // Cache compiled functions to prevent re-compiling on every frame/pan
   const compiledCache = useMemo(() => {
@@ -159,7 +178,15 @@ export function GraphCanvas() {
         </Mafs>
       )}
       
-      <div className="absolute top-6 right-6 flex gap-2">
+      <div className="absolute top-6 right-6 flex gap-2 items-center">
+        <button 
+            onClick={exportImage}
+            title="Export to PNG"
+            className="flex items-center gap-2 bg-panel-bg/80 backdrop-blur-md px-4 py-2 rounded-full border border-border-subtle text-xs text-text-dim font-medium hover:text-text-main hover:border-text-dim/30 transition-all shadow-lg"
+        >
+            <Download className="w-3.5 h-3.5" />
+            Export PNG
+        </button>
         <div className="bg-panel-bg/80 backdrop-blur-md px-4 py-2 rounded-full border border-border-subtle text-xs text-text-dim font-medium transition-colors">
           Engine: Mafs + MathJS
         </div>
