@@ -84,7 +84,7 @@ export function GraphCanvas() {
   }, [equations]);
 
   return (
-    <div ref={containerRef} className="flex-1 relative h-full w-full bg-black overflow-hidden">
+    <div ref={containerRef} className="flex-1 relative h-full w-full bg-app-bg overflow-hidden transition-colors duration-300">
       {size.width > 0 && (
         <Mafs 
           width={size.width} 
@@ -98,7 +98,7 @@ export function GraphCanvas() {
       )}
       
       <div className="absolute top-6 right-6 flex gap-2">
-        <div className="bg-neutral-900/80 backdrop-blur-md px-4 py-2 rounded-full border border-neutral-800 text-xs text-neutral-400 font-medium">
+        <div className="bg-panel-bg/80 backdrop-blur-md px-4 py-2 rounded-full border border-border-subtle text-xs text-text-dim font-medium transition-colors">
           Engine: Mafs + MathJS
         </div>
       </div>
