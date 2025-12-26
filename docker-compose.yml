@@ -1,0 +1,14 @@
+version: '3.8'
+services:
+  webcal:
+    image: node:20-alpine
+    working_dir: /app
+    ports:
+      - "50000:3000"
+    environment:
+      - NODE_ENV=development
+      - PORT=3000
+    volumes:
+      - .:/app
+      - /app/node_modules
+    command: sh -c "npm install && npm run dev"
