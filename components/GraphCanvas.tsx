@@ -10,6 +10,22 @@ export function GraphCanvas() {
   const containerRef = useRef<HTMLDivElement>(null);
   const [size, setSize] = useState({ width: 0, height: 0 });
 
+  // Cache compiled functions to prevent re-compiling on every frame/pan
+  const compiledCache = useMemo(() => {
+    const cache = new Map<string, (val: number) => number>();
+    equations.forEach(eq => {
+      if (eq.expression) {
+        const fn = createEvaluator(eq.expression, eq.type === "parametric" ? "t" : "x");
+        if (fn) cache.set(`${eq.id}-main`, fn);
+      }
+      if (eq.expressionY) {
+        const fn = createEvaluator(eq.expressionY, "t");
+        if (fn) cache.set(`${eq.id}-y`, fn);
+      }
+    });
+    return cache;
+  }, [equations]);
+
   useEffect(() => {
     if (!containerRef.current) return;
     
@@ -33,55 +49,101 @@ export function GraphCanvas() {
     return () => observer.disconnect();
   }, []);
 
-  const renderedPlots = useMemo(() => {
-    return equations
-      .filter((eq) => eq.visible)
-      .map((eq) => {
-        if (eq.type === "function") {
-          if (!eq.expression.trim()) return null;
-          const fn = createEvaluator(eq.expression, "x");
-          if (!fn) return null;
+    const renderedPlots = useMemo(() => {
 
-          if (eq.inequalityOp) {
-              return (
-                <Inequality
-                    key={eq.id}
-                    y={fn}
-                    lessThan={eq.inequalityOp === "<" || eq.inequalityOp === "<="}
-                    lessThanOrEqualTo={eq.inequalityOp === "<="}
-                    greaterThan={eq.inequalityOp === ">" || eq.inequalityOp === ">="}
-                    greaterThanOrEqualTo={eq.inequalityOp === ">="}
-                    color={eq.color}
-                />
-              );
+      return equations
+
+        .filter((eq) => eq.visible)
+
+        .map((eq) => {
+
+          if (eq.type === "function") {
+
+            const fn = compiledCache.get(`${eq.id}-main`);
+
+            if (!fn) return null;
+
+  
+
+            if (eq.inequalityOp) {
+
+                return (
+
+                  <Inequality
+
+                      key={eq.id}
+
+                      y={fn}
+
+                      lessThan={eq.inequalityOp === "<" || eq.inequalityOp === "<="}
+
+                      lessThanOrEqualTo={eq.inequalityOp === "<="}
+
+                      greaterThan={eq.inequalityOp === ">" || eq.inequalityOp === ">="}
+
+                      greaterThanOrEqualTo={eq.inequalityOp === ">="}
+
+                      color={eq.color}
+
+                  />
+
+                );
+
+            }
+
+  
+
+            return (
+
+              <Plot.OfX
+
+                key={eq.id}
+
+                y={fn}
+
+                color={eq.color}
+
+                weight={3}
+
+              />
+
+            );
+
+          } else if (eq.type === "parametric") {
+
+            const fnX = compiledCache.get(`${eq.id}-main`);
+
+            const fnY = compiledCache.get(`${eq.id}-y`);
+
+            if (!fnX || !fnY) return null;
+
+            
+
+            return (
+
+              <Plot.Parametric
+
+                key={eq.id}
+
+                xy={(t) => [fnX(t), fnY(t)]}
+
+                t={eq.tBounds || [0, 2 * Math.PI]}
+
+                color={eq.color}
+
+                weight={3}
+
+              />
+
+            );
+
           }
 
-          return (
-            <Plot.OfX
-              key={eq.id}
-              y={fn}
-              color={eq.color}
-              weight={3}
-            />
-          );
-        } else if (eq.type === "parametric") {
-          if (!eq.expression.trim() || !eq.expressionY?.trim()) return null;
-          const fnX = createEvaluator(eq.expression, "t");
-          const fnY = createEvaluator(eq.expressionY, "t");
-          if (!fnX || !fnY) return null;
-          return (
-            <Plot.Parametric
-              key={eq.id}
-              xy={(t) => [fnX(t), fnY(t)]}
-              t={eq.tBounds || [0, 2 * Math.PI]}
-              color={eq.color}
-              weight={3}
-            />
-          );
-        }
-        return null;
-      });
-  }, [equations]);
+          return null;
+
+        });
+
+    }, [equations, compiledCache]);
 
   return (
     <div ref={containerRef} className="flex-1 relative h-full w-full bg-app-bg overflow-hidden transition-colors duration-300">
