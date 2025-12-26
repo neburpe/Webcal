@@ -2,22 +2,44 @@
 
 import { useCalculatorStore, Equation } from "@/store/useCalculatorStore";
 import { motion, AnimatePresence } from "framer-motion";
-import { Plus, Trash2, Eye, EyeOff, Settings2, FunctionSquare, Variable, Sparkles } from "lucide-react";
+import { Trash2, Eye, EyeOff, FunctionSquare, Variable, Sparkles, ChevronLeft, Menu } from "lucide-react";
 
 import { PresetGallery } from "./PresetGallery";
-import { useState } from "react";
+import { useState, CSSProperties } from "react";
 
 export function Sidebar() {
   const { equations, addEquation, showGrid, toggleGrid } = useCalculatorStore();
   const [isGalleryOpen, setIsGalleryOpen] = useState(false);
+  const [isCollapsed, setIsCollapsed] = useState(false);
 
   return (
     <>
       <PresetGallery isOpen={isGalleryOpen} onClose={() => setIsGalleryOpen(false)} />
+      
+      {/* Toggle Button (Visible when collapsed) */}
+      <AnimatePresence>
+        {isCollapsed && (
+          <motion.button
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: -20 }}
+            onClick={() => setIsCollapsed(false)}
+            className="absolute top-4 left-4 z-50 p-2 bg-neutral-900/80 backdrop-blur-md border border-neutral-800 rounded-lg text-neutral-400 hover:text-white transition-colors"
+          >
+            <Menu className="w-5 h-5" />
+          </motion.button>
+        )}
+      </AnimatePresence>
+
       <motion.div 
-        initial={{ x: -300 }}
-        animate={{ x: 0 }}
-        className="w-80 bg-neutral-900 border-r border-neutral-800 z-10 flex flex-col shadow-2xl overflow-hidden"
+        initial={{ x: 0, width: 320 }}
+        animate={{ 
+            x: isCollapsed ? -320 : 0,
+            width: 320,
+            opacity: isCollapsed ? 0 : 1
+        }}
+        transition={{ type: "spring", stiffness: 300, damping: 30 }}
+        className="h-full bg-neutral-900 border-r border-neutral-800 z-10 flex flex-col shadow-2xl overflow-hidden relative"
       >
         <div className="p-6 border-b border-neutral-800 flex items-center justify-between">
           <div>
@@ -26,13 +48,22 @@ export function Sidebar() {
             </h1>
             <p className="text-neutral-500 text-xs mt-1 uppercase tracking-tighter font-semibold">Technical Fellow Edition</p>
           </div>
-          <button 
-            onClick={() => setIsGalleryOpen(true)}
-            title="Open Gallery"
-            className="p-2 hover:bg-neutral-800 rounded-lg text-neutral-400 hover:text-yellow-400 transition-colors"
-          >
-            <Sparkles className="w-5 h-5" />
-          </button>
+          <div className="flex items-center gap-1">
+            <button 
+                onClick={() => setIsGalleryOpen(true)}
+                title="Open Gallery"
+                className="p-2 hover:bg-neutral-800 rounded-lg text-neutral-400 hover:text-yellow-400 transition-colors"
+            >
+                <Sparkles className="w-5 h-5" />
+            </button>
+            <button 
+                onClick={() => setIsCollapsed(true)}
+                title="Collapse Sidebar"
+                className="p-2 hover:bg-neutral-800 rounded-lg text-neutral-400 hover:text-white transition-colors"
+            >
+                <ChevronLeft className="w-5 h-5" />
+            </button>
+          </div>
         </div>
 
         <div className="flex-1 overflow-y-auto p-4 space-y-3 custom-scrollbar">
@@ -94,7 +125,7 @@ function EquationItem({ equation }: { equation: Equation }) {
       <div className="flex items-start gap-3 mb-2">
         <div 
           className="w-3 h-3 rounded-full shrink-0 mt-1.5 shadow-[0_0_10px_var(--color)]"
-          style={{ backgroundColor: equation.color, "--color": equation.color } as any}
+          style={{ backgroundColor: equation.color, "--color": equation.color } as CSSProperties}
         />
         
         <div className="flex-1 space-y-2">

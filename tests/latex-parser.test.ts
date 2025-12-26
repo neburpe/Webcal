@@ -1,5 +1,6 @@
 import { parseLatex } from "../lib/latex-parser";
 import assert from "assert";
+import { parseTex } from "tex-math-parser";
 
 console.log("Running LaTeX Parser Tests...");
 
@@ -9,7 +10,7 @@ assert.strictEqual(t1.expression.replace(/\s/g, ''), "1+2", "Test 1 Failed");
 console.log("✅ Basic Arithmetic");
 
 // Test 2: Fractions
-const node2 = require("tex-math-parser").parseTex("\\frac{1}{2}");
+const node2 = parseTex("\\frac{1}{2}");
 console.log("Fraction JSON:", JSON.stringify(node2, null, 2));
 const t2 = parseLatex("\\frac{1}{2}");
 console.log("Fraction output:", t2.expression);

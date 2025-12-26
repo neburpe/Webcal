@@ -4,7 +4,6 @@ import { PRESETS } from "@/lib/presets";
 import { useCalculatorStore } from "@/store/useCalculatorStore";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, Sparkles } from "lucide-react";
-import { useState } from "react";
 
 export function PresetGallery({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
   const { setEquations } = useCalculatorStore();

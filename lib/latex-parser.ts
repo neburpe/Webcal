@@ -20,18 +20,20 @@ export function parseLatex(latex: string): ParseResult {
     const node = parseTex(latex);
     
     // Sanitize operators that might be left as TeX commands (e.g. \frac)
-    const sanitized = node.transform(function (node: any) {
+    const sanitized = node.transform(function (node: { isOperatorNode?: boolean; op?: string }) {
         if (node.isOperatorNode && node.op === '\\frac') {
             node.op = '/';
         }
         if (node.isOperatorNode && node.op === '\\cdot') {
             node.op = '*';
         }
-        return node;
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        return node as any;
     });
 
     return { expression: sanitized.toString(), error: null };
-  } catch (e: any) {
-    return { expression: "", error: e.message || "Invalid LaTeX" };
+  } catch (e: unknown) {
+    const message = e instanceof Error ? e.message : "Invalid LaTeX";
+    return { expression: "", error: message };
   }
 }
