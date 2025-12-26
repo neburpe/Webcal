@@ -1,6 +1,6 @@
 "use client";
 
-import { Mafs, Coordinates, Plot, Inequality } from "mafs";
+import { Mafs, Coordinates, Plot } from "mafs";
 import { useCalculatorStore } from "@/store/useCalculatorStore";
 import { createEvaluator } from "@/lib/math-evaluator";
 import { useMemo, useRef, useState, useEffect, useCallback } from "react";
@@ -84,31 +84,55 @@ export function GraphCanvas() {
 
   
 
-            if (eq.inequalityOp) {
+                      if (eq.inequalityOp) {
 
-                return (
+  
 
-                  <Inequality
+                          return (
 
-                      key={eq.id}
+  
 
-                      y={fn}
+                            <Plot.Inequality
 
-                      lessThan={eq.inequalityOp === "<" || eq.inequalityOp === "<="}
+  
 
-                      lessThanOrEqualTo={eq.inequalityOp === "<="}
+                                key={eq.id}
 
-                      greaterThan={eq.inequalityOp === ">" || eq.inequalityOp === ">="}
+  
 
-                      greaterThanOrEqualTo={eq.inequalityOp === ">="}
+                                y={fn}
 
-                      color={eq.color}
+  
 
-                  />
+                                lessThan={eq.inequalityOp === "<" || eq.inequalityOp === "<="}
 
-                );
+  
 
-            }
+                                lessThanOrEqualTo={eq.inequalityOp === "<="}
+
+  
+
+                                greaterThan={eq.inequalityOp === ">" || eq.inequalityOp === ">="}
+
+  
+
+                                greaterThanOrEqualTo={eq.inequalityOp === ">="}
+
+  
+
+                                color={eq.color}
+
+  
+
+                            />
+
+  
+
+                          );
+
+  
+
+                      }
 
   
 
