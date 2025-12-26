@@ -264,12 +264,14 @@ export function GraphCanvas() {
           pan={true}
         >
           <Coordinates.Cartesian 
-            subdivisions={showGrid ? 5 : false}
+            subdivisions={showGrid ? 10 : false}
             xAxis={{
+              axis: true,
               lines: 1,
               labels: (n) => (n % 1 === 0 ? n.toString() : ""),
             }}
             yAxis={{
+              axis: true,
               lines: 1,
               labels: (n) => (n % 1 === 0 ? n.toString() : ""),
             }}

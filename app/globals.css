@@ -9,20 +9,30 @@
   --color-text-dim: var(--text-dim);
 }
 
-:root {
-  --app-bg: #ffffff;
-  --panel-bg: #f8f9fa;
-  --border-subtle: #e9ecef;
-  --text-main: #1a1a1a;
-  --text-dim: #6c757d;
-}
-
 .dark {
   --app-bg: #000000;
   --panel-bg: #0a0a0a;
   --border-subtle: #1a1a1a;
   --text-main: #ffffff;
   --text-dim: #888888;
+  
+  /* Mafs Overrides */
+  --mafs-bg: var(--app-bg);
+  --mafs-fg: var(--text-main);
+  --mafs-line-color: #222;
+}
+
+:root {
+  --app-bg: #ffffff;
+  --panel-bg: #f8f9fa;
+  --border-subtle: #e9ecef;
+  --text-main: #1a1a1a;
+  --text-dim: #6c757d;
+
+  /* Mafs Overrides */
+  --mafs-bg: var(--app-bg);
+  --mafs-fg: var(--text-main);
+  --mafs-line-color: #eee;
 }
 
 html,
